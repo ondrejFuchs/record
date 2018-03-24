@@ -7,7 +7,9 @@ import logging
 import shutil
 
 DEBUG = False
+# TODO: logging do journalctl, uploader
 
+IN_BUFFER = bytearray(33600)
 ###          
 # Funcion for value of sampling rate for arecord
 #
@@ -77,7 +79,7 @@ def record(nameDevice, args):
   timeNow = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
   record = 'arecord' + ' -f ' + args.Format + ' -c ' + str(args.Channel) + ' -r ' + str(args.Rate) + ' -d ' + str(args.Durantion) + ' ' +  \
   "recording/" + timeNow + '-' + nameDevice + '.wav'
-  p = subprocess.Popen(record, shell=True)
+  p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
   time.sleep(args.Durantion)
   p.terminate()
 
