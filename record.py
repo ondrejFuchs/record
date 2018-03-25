@@ -81,8 +81,8 @@ def record(nameDevice, args):
   #"recording/" + timeNow + '-' + nameDevice + '.wav'
   record = 'rec -c 2 '+ "recording/" + timeNow + '-' + nameDevice + '.wav' + ' trim 0 ' + str(args.Durantion)
   p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
-  time.sleep(args.Durantion)
-  p.terminate()
+  p.wait()
+  #p.terminate()
 
 ###          
 # Main function
