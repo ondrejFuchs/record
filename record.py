@@ -108,7 +108,7 @@ def main():
       timeToSleep = args.Period - args.Durantion
       time.sleep(timeToSleep)
     else:
-      time.sleep(0.05)  
+      time.sleep(0.1)  
       
     
 # this is the standard boilerplate that calls the main() function
