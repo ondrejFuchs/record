@@ -78,7 +78,8 @@ def make_subdir():
 def record(nameDevice, args):
   timeNow = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
   record = 'arecord' + ' -f ' + args.Format + ' -c ' + str(args.Channel) + ' -r ' + str(args.Rate) + ' -d ' + str(args.Durantion) + ' ' +  \
-  "recording/" + timeNow + '-' + nameDevice + '.wav'
+  #"recording/" + timeNow + '-' + nameDevice + '.wav'
+  "/tmp/" + timeNow + '-' + nameDevice + '.wav'
   #record = 'rec -c 2 '+ "recording/" + timeNow + '-' + nameDevice + '.wav' + ' trim 0 ' + str(args.Durantion)
   p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
   p.wait()
