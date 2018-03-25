@@ -77,8 +77,9 @@ def make_subdir():
 # arecord -f S32_LE -c 2 -r 96000 -d 5 test.wav
 def record(nameDevice, args):
   timeNow = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-  record = 'arecord' + ' -f ' + args.Format + ' -c ' + str(args.Channel) + ' -r ' + str(args.Rate) + ' -d ' + str(args.Durantion) + ' ' +  \
-  "recording/" + timeNow + '-' + nameDevice + '.wav'
+  #record = 'arecord' + ' -f ' + args.Format + ' -c ' + str(args.Channel) + ' -r ' + str(args.Rate) + ' -d ' + str(args.Durantion) + ' ' +  \
+  #"recording/" + timeNow + '-' + nameDevice + '.wav'
+  record = 'rec -c 2 '+ "recording/" + timeNow + '-' + nameDevice + '.wav' + ' trim 0 ' + str(args.Durantion)
   p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
   time.sleep(args.Durantion)
   p.terminate()
@@ -106,6 +107,8 @@ def main():
     if args.Mode == 'SA':
       timeToSleep = args.Period - args.Durantion
       time.sleep(timeToSleep)
+    else:
+      time.sleep(0.05)  
       
     
 # this is the standard boilerplate that calls the main() function
