@@ -6,6 +6,8 @@ import platform
 import logging
 import shutil
 
+# 172.16.187.99
+
 DEBUG = False
 # TODO: logging do journalctl, uploader
 
