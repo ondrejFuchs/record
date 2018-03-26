@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 from datetime import datetime
 import os, sys, time, errno
@@ -5,13 +6,32 @@ import subprocess
 import platform
 import logging
 import shutil
+from systemd.journal import JournaldLogHandler
 
 # 172.16.187.99
 
 DEBUG = False
-# TODO: logging do journalctl, uploader
+# TODO: uploader
 
 IN_BUFFER = bytearray(33600)
+
+# get an instance of the logger object this module will use
+logger = logging.getLogger(__name__)
+
+# instantiate the JournaldLogHandler to hook into systemd
+journald_handler = JournaldLogHandler()
+
+# set a formatter to include the level name
+journald_handler.setFormatter(logging.Formatter(
+    '[%(levelname)s] %(message)s'
+))
+
+# add the journald handler to the current logger
+logger.addHandler(journald_handler)
+
+# optionally set the logging level
+logger.setLevel(logging.DEBUG)
+
 ###          
 # Funcion for value of sampling rate for arecord
 #
@@ -77,23 +97,36 @@ def make_subdir():
 # Func to stard arecord to make record save in wav with parameters
 #  - Argumenty: sample/strema (sampling), number of channels (-c), format (-f), rate (-r), durantion (-d), period 
 # arecord -f S32_LE -c 2 -r 96000 -d 5 test.wav
-def record(nameDevice, args):
+def record(dirToSave, nameDevice, args):
   timeNow = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+  timeD = args.Durantion 
   record = 'arecord' + ' -f ' + args.Format + ' -c ' + str(args.Channel) + ' -r ' + str(args.Rate) + ' -d ' + str(args.Durantion) + ' ' +  \
-  "/tmp/" + timeNow + '-' + nameDevice + '.wav'
+  dirToSave + '/' + timeNow + '-' + nameDevice + '.wav'
   #"recording/" + timeNow + '-' + nameDevice + '.wav'
   #record = 'rec -c 2 '+ "recording/" + timeNow + '-' + nameDevice + '.wav' + ' trim 0 ' + str(args.Durantion)
+  #'--file-type raw '
   p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
+  logger.info('Record wav file into: %s',  dirToSave)
   p.wait()
-  #p.terminate()
-
+  
+###          
+# Function to delete old date from mount disk
+# 
+def deleteData(dirToSave):
+  fileList = os.listdir(dirToSave)
+  for fileName in fileList:
+   os.remove(dirToSave+"/"+fileName)
+      
 ###          
 # Main function
 # 
 def main():
+  # Directory to save date
+  dirToSave='/mnt/xfsdata'
   # Delete old data
-  if os.path.exists("recording"):
-    shutil.rmtree('recording')
+  #if os.path.exists("recording"):
+  #  shutil.rmtree('recording')
+  deleteData(dirToSave)  
   # Set logging
   logging.basicConfig(level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
   # Get name of device to filename
@@ -101,21 +134,29 @@ def main():
   # Parse arguments of device 
   args = parse_arguments()
   # Make dir to save records
-  make_subdir()
-  
-  #logging.debug("Pizza created")
+  #make_subdir()
   # Main loop to recordig
   while True:
-    record(nameDevice, args)
+    record(dirToSave, nameDevice, args)
     if args.Mode == 'SA':
       timeToSleep = args.Period - args.Durantion
       time.sleep(timeToSleep)
-    #else:
-      #time.sleep(0.1)  
       
-    
 # this is the standard boilerplate that calls the main() function
 if __name__ == '__main__':
     # sys.exit(main(sys.argv)) # used to give a better look to exists
     main()
+    
+
+
+
+
+
+
+
+
+
+
+   
+
 
