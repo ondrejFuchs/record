@@ -113,7 +113,7 @@ def record(parentDirToSave, nameDevice, formatRecord, args):
   randomString = (''.join(choice(digits) for i in range(6))) + '_' + (''.join(choice(ascii_lowercase) for i in range(8)))
   nameOfFile = dirToSave + '/' + timeNow + '-' + randomString + '_' + nameDevice + formatRecord
   
-  record = 'arecord' + ' -f ' + args.Format + ' -c ' + str(args.Channel) + ' -r ' + str(args.Rate) + ' -d ' + str(args.Durantion) + ' ' +  nameOfFile
+  record = 'arecord' + ' -Dhw:0,0' +' -f ' + args.Format + ' -c ' + str(args.Channel) + ' -r ' + str(args.Rate) + ' -d ' + str(args.Durantion) + ' ' +  nameOfFile
   # Start recording as subprocess
   p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
   logger.info('Record wav file into: %s',  dirToSave)
@@ -160,7 +160,10 @@ def main():
   # Today date
   date = str(datetime.now().strftime('%Y-%m-%d'))
   # Directory to save date
-  dirToSave='/mnt/xfsdata'
+  if os.path.isdir("/mnt/xfsdata") !=  True:
+    dirToSave='/tmp'
+  else:  
+    dirToSave='/mnt/xfsdata'
   # Format of records
   formatRecord = '.wav'
   # Delete old data
