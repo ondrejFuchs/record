@@ -8,7 +8,7 @@ import logging
 import shutil
 import threading
 import glob
-from systemd.journal import JournaldLogHandler
+from systemd.journal import JournalHandler
 from random import choice
 from string import ascii_lowercase
 from string import digits
@@ -27,7 +27,7 @@ IN_BUFFER = bytearray(33600)
 logger = logging.getLogger(__name__)
 
 # instantiate the JournaldLogHandler to hook into systemd
-journald_handler = JournaldLogHandler()
+journald_handler = JournalHandler()
 
 # set a formatter to include the level name
 journald_handler.setFormatter(logging.Formatter(
