@@ -8,14 +8,17 @@ import logging
 import shutil
 import threading
 import glob
+import boto3
 from systemd.journal import JournalHandler
 from random import choice
 from string import ascii_lowercase
 from string import digits
 
-# TODO: uploader
-
-# 172.16.187.99
+# Let's use Amazon S3
+s3 = boto3.resource('s3')
+# Name of bucket in S3
+bucketName = 'neuronsw-fuchs'
+# Debug mode
 DEBUG = False
 # List of new records  
 global listOfFile
@@ -144,7 +147,8 @@ def checkNewFileThread(actualDir, formatRecord, args, run_event):
         #
         # UPLOAD TO CLOAD
         #
-        logger.info(fileName + " was upload.")
+        fixed = fileName[13:]
+        logger.info(fixed + " was upload.")
         # Remove upload file from list of waiting file to upload
         listOfFile.remove(fileName);
         # Remove if upload was ok
