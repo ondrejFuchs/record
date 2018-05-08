@@ -134,7 +134,7 @@ def deleteData(dirToSave):
 ###          
 # Function to upload new file to cloud
 #       
-def checkNewFileThread(actualDir, formatRecord, args, run_event):
+def checkNewFileThread(actualDir, formatRecord, args, run_event, nameDevice):
   global listOfFile
   logger.info("Thread to upload data running.")
   # By one loop after recording
@@ -145,8 +145,9 @@ def checkNewFileThread(actualDir, formatRecord, args, run_event):
       for fileName in listOfFile:
         # Upload file (fileName) to cloud
         pathToSave = fileName[13:]
+        pathInS3 = nameDevice + "/" + pathToSave
         data = open(fileName, 'rb')
-        s3.Bucket(bucketName).put_object(Key=pathToSave, Body=data)
+        s3.Bucket(bucketName).put_object(Key=pathInS3, Body=data)
         logger.info(fileName + " was upload.")
         # Remove upload file from list of waiting file to upload
         listOfFile.remove(fileName);
@@ -182,7 +183,7 @@ def main():
   # Make dir to save records
   actualDir = make_subdir(dirToSave, date)
   # Make new thread to upload new record to cloud
-  UploadThread = threading.Thread(target=checkNewFileThread, args=[actualDir, formatRecord, args, run_event])
+  UploadThread = threading.Thread(target=checkNewFileThread, args=[actualDir, formatRecord, args, run_event, nameDevice])
   UploadThread.start()
   # Main loop to recordig
   try:
