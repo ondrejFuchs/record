@@ -147,8 +147,10 @@ def checkNewFileThread(actualDir, formatRecord, args, run_event):
         #
         # UPLOAD TO CLOAD
         #
-        fixed = fileName[13:]
-        logger.info(fixed + " was upload.")
+        pathToSave = fileName[13:]
+        data = open(fileName, 'rb')
+        s3.Bucket(bucketName).put_object(Key=pathToSave, Body=data)
+        logger.info(fileName + " was upload.")
         # Remove upload file from list of waiting file to upload
         listOfFile.remove(fileName);
         # Remove if upload was ok
