@@ -120,8 +120,8 @@ def record(parentDirToSave, nameDevice, formatRecord, args):
   # Start recording as subprocess
   p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
   logger.info('Record wav file into: %s',  dirToSave)
-  listOfFile.append(nameOfFile)
   p.wait()
+  listOfFile.append(nameOfFile)
   
 ###          
 # Function to delete old date from mount disk
@@ -144,9 +144,6 @@ def checkNewFileThread(actualDir, formatRecord, args, run_event):
       # Remove after update
       for fileName in listOfFile:
         # Upload file (fileName) to cloud
-        #
-        # UPLOAD TO CLOAD
-        #
         pathToSave = fileName[13:]
         data = open(fileName, 'rb')
         s3.Bucket(bucketName).put_object(Key=pathToSave, Body=data)
