@@ -176,6 +176,12 @@ def main():
   deleteData(dirToSave)  
   # Set logging
   logging.basicConfig(level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
+  # Check mount and open partition
+  bashCommand = "sudo test -b /dev/disk/by-id/dm-uuid-*$(cryptsetup luksUUID /dev/mmcblk0p3 | tr -d -)* && printf \"Open\" || printf \"Close\""
+  output = subprocess.check_output(['bash','-c', bashCommand])
+  if output != "Open":
+      logger.info("XFS partition is not open")
+      exit(1)
   # Get name of device to filename
   nameDevice = platform.node()
   # Parse arguments of device 
