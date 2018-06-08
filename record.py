@@ -79,6 +79,9 @@ def parse_arguments():
                     help="Set durantion of recording (s).")
   parser.add_argument("Period", type=int, nargs='?', default=15, 
                     help="Set period of recording (s).")
+  parser.add_argument("Crypt", type=str, nargs='?', default="no", 
+                    choices=['yes', 'no'], 
+                    help="Set Crypt of recording")                   
   args = parser.parse_args()
   
   if args.Mode == 'SA':
@@ -121,7 +124,16 @@ def record(parentDirToSave, nameDevice, formatRecord, args):
   p = subprocess.Popen(record, shell=True, bufsize=len(IN_BUFFER))
   logger.info('Record wav file into: %s',  dirToSave)
   p.wait()
-  listOfFile.append(nameOfFile)
+  
+  if args.Crypt == "no":
+    listOfFile.append(nameOfFile)
+  else:
+    # Encrypt audio file on devices
+    cryptAudio = 'gpg --yes --batch --passphrase="' + "DP" + nameDevice + '" -c ' + nameOfFile  
+    c = subprocess.Popen(cryptAudio, shell=True)
+    nameOfCryptFile = nameOfFile + ".gpg"
+    listOfFile.append(nameOfCryptFile)
+  
   
 ###          
 # Function to delete old date from mount disk
